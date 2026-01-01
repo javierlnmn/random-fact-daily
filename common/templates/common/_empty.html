@@ -3,7 +3,6 @@
   {% include 'common/base/head.html' %}
 
   <body class="flex flex-col min-h-svh">
-    {% include 'common/base/header.html' %} {% block content %} {% endblock %}
-    {% include 'common/base/footer.html' %}
+    {% block content %} {% endblock %}
   </body>
 </html>
