@@ -1,0 +1,8 @@
+{% extends 'common/_empty.html' %} {% block content %}
+<main
+  class="flex-1 grid place-items-center w-11/12 max-w-[1200px] mx-auto my-6"
+>
+  <h1 class="text-4xl font-bold">{{ fact.fact }}</h1>
+  <p class="text-lg">{{ fact.description }}</p>
+</main>
+{% endblock %}
