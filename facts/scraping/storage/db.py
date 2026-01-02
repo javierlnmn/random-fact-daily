@@ -31,4 +31,8 @@ class DBStorage(BaseStorage):
                     fact_obj.save()
                     logger.info(f"Updated fact #{index}")
                 else:
-                    logger.info(f"Fact #{index} already exists")
+                    logger.info(
+                        "Fact #%s already exists:\n\t- %s\n\t- %s",
+                        index,
+                        fact_obj.fact,
+                    )
