@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.views import View
 from django.utils import timezone
+from django.views import View
+
 from .models import Fact
 
 
