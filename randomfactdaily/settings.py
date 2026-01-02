@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # Other apps
     "common",
     "accounts",
+    "facts",
 ]
 
 MIDDLEWARE = [
@@ -92,6 +93,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "randomfactdaily.wsgi.application"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
