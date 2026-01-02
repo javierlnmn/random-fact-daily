@@ -1,7 +1,7 @@
 import logging
 
-from facts.scraping.extractors.base import Extractor
-from facts.scraping.storage.base import Storage
+from facts.scraping.extractors import BaseExtractor as Extractor
+from facts.scraping.storage import BaseStorage as Storage
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

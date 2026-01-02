@@ -2,15 +2,20 @@ import logging
 
 import requests
 from bs4 import BeautifulSoup, SoupStrainer, Tag
+from django.utils.text import slugify
 
-from facts.scraping.extractors.base import Extractor
+from facts.scraping.extractors import BaseExtractor
+from facts.scraping.formatters import BaseFactFormatter, DefaultFactFormatter
 from facts.scraping.types import Fact as FactType
 
 logger = logging.getLogger(__name__)
 
 
-class ScienceFocus121FactsExtractor(Extractor):
+class ScienceFocus121FactsExtractor(BaseExtractor):
     url = "https://www.sciencefocus.com/science/fun-facts"
+
+    def __init__(self, formatter: BaseFactFormatter = DefaultFactFormatter()) -> None:
+        self.formatter = formatter
 
     def _fetch(self) -> str:
         logger.info(f"Fetching {self.url}")
@@ -37,7 +42,8 @@ class ScienceFocus121FactsExtractor(Extractor):
         if bold is None:
             logger.warning("No bold tag found. Using text as fact instead")
             text = fact_html.get_text(" ", strip=True)
-            return FactType(fact=text, description="")
+            fact_text, desc_text = self.formatter.format(text, "")
+            return FactType(fact=fact_text, description=desc_text)
 
         fact_text = bold.get_text(strip=True)
         bold.extract()
@@ -48,7 +54,11 @@ class ScienceFocus121FactsExtractor(Extractor):
 
         desc_html = fact_html.decode_contents().strip()
 
-        return FactType(fact=fact_text, description=desc_html)
+        fact_text, desc_html = self.formatter.format(fact_text, desc_html)
+
+        identifier = slugify(fact_text)
+
+        return FactType(fact=fact_text, identifier=identifier, description=desc_html)
 
     def run(self) -> list[FactType]:
         html = self._fetch()

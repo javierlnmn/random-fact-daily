@@ -3,7 +3,7 @@ from typing import Protocol
 from facts.scraping.types import Fact as FactType
 
 
-class Extractor(Protocol):
+class BaseExtractor(Protocol):
     url: str
 
     def _fetch(self) -> str: ...
