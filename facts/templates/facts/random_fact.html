@@ -2,7 +2,7 @@
 <main
   class="flex-1 grid place-items-center w-11/12 max-w-[1200px] mx-auto my-6"
 >
-  <div class="flex flex-col gap-3 items-center justify-center">
+  <div class="flex flex-col gap-3 items-center justify-center dark:text-white">
     {% if fact %}
     <h1 class="text-4xl max-md:text-2xl font-bold text-center text-balance">
       {{ fact.fact }}
@@ -16,6 +16,10 @@
       Sorry, there is no fact for today :(
     </h1>
     {% endif %}
+  </div>
+
+  <div class="absolute top-4 right-4">
+    {% include 'common/base/theme_toggle.html' %}
   </div>
 </main>
 {% endblock %}
