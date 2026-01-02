@@ -15,12 +15,13 @@ services:
     volumes:
       - static_data:/data/app/staticfiles
       - app_data:/data/app
-    resources:
-    limits:
-      memory: 384M
-      cpus: "0.5"
-    reservations:
-      memory: 128M
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
 
 volumes:
   static_data:
