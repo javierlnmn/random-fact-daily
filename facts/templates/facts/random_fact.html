@@ -2,7 +2,11 @@
 <main
   class="flex-1 grid place-items-center w-11/12 max-w-[1200px] mx-auto my-6"
 >
-  <h1 class="text-4xl font-bold">{{ fact.fact }}</h1>
-  <p class="text-lg">{{ fact.description }}</p>
+  <div class="flex flex-col gap-3 items-center justify-center">
+    <h1 class="text-4xl max-md:text-2xl font-bold">{{ fact.fact }}</h1>
+    <p class="text-lg max-md:text-base max-sm:text-xs text-center text-balance">
+      {{ fact.description }}
+    </p>
+  </div>
 </main>
 {% endblock %}

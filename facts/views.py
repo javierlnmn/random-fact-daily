@@ -1,8 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 
 from .models import Fact
+
+
+class IndexView(View):
+    def get(self, request):
+        return redirect(reverse("facts:random-fact"))
 
 
 class RandomFactView(View):

@@ -23,7 +23,7 @@ class Fact(models.Model):
     categories = models.ManyToManyField(Category, related_name="facts")
 
     def __str__(self):
-        return self.title
+        return self.fact
 
     @classmethod
     def get_fact_from_date(cls, date: datetime.date):
