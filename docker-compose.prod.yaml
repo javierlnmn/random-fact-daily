@@ -1,0 +1,27 @@
+x-app: &default-app
+  build:
+    context: .
+    dockerfile: Dockerfile.prod
+  env_file:
+    - .env
+
+services:
+
+  web:
+    <<: *default-app
+    command: sh -c "poetry run python manage.py migrate && poetry run gunicorn polarized.wsgi:application --bind 0.0.0.0:8000--workers 1 --threads 2"
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_data:/data/app/staticfiles
+      - app_data:/data/app
+    resources:
+    limits:
+      memory: 384M
+      cpus: "0.5"
+    reservations:
+      memory: 128M
+
+volumes:
+  static_data:
+  app_data:
