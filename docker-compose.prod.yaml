@@ -9,7 +9,7 @@ services:
 
   web:
     <<: *default-app
-    command: sh -c "poetry run python manage.py makemigrations && poetry run python manage.py migrate && poetry run gunicorn polarized.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 2"
+    command: sh -c "poetry run python manage.py makemigrations && poetry run python manage.py migrate && poetry run gunicorn randomfactdaily.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 2"
     ports:
       - "8000:8000"
     volumes:
