@@ -60,10 +60,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "--formatter",
             type=str,
-            default="DefaultFactFormatter",
             help=(
-                "Optional formatter class name (from 'facts.scraping.formatters', "
-                "default: 'DefaultFactFormatter')."
+                "Optional formatter class name (from 'facts.scraping.formatters'). "
+                "If omitted, the extractor's default formatter is used."
             ),
         )
         parser.add_argument(
@@ -80,15 +79,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         extractor_name: str = options["extractor"]
         storage_name: str = options["storage"]
-        formatter_name: str = options["formatter"]
+        formatter_name: str | None = options["formatter"]
         override: bool = options["override"]
         delete: bool = options["delete"]
 
-        # Resolve formatter
-        formatter_cls = _resolve_class(
-            "facts.scraping.formatters", formatter_name, BaseFactFormatter
-        )
-        formatter: BaseFactFormatter = formatter_cls()
+        formatter: BaseFactFormatter | None = None
+        if formatter_name:
+            formatter_cls = _resolve_class(
+                "facts.scraping.formatters", formatter_name, BaseFactFormatter
+            )
+            formatter = formatter_cls()
 
         # Resolve extractor (from the package so new extractors can be added easily)
         extractor_module_path = "facts.scraping.extractors"
@@ -101,13 +101,17 @@ class Command(BaseCommand):
                 f"'{extractor_module_path}': {exc}"
             ) from exc
 
-        # Basic protocol/ABC check: extractor must be instantiable with a formatter
+        # Instantiate extractor (with formatter if explicitly provided)
         try:
-            extractor = extractor_cls(formatter=formatter)
+            extractor = (
+                extractor_cls()
+                if formatter is None
+                else extractor_cls(formatter=formatter)
+            )
         except TypeError as exc:
             raise CommandError(
-                f"Could not instantiate extractor '{extractor_name}' with the "
-                f"provided formatter '{formatter_name}': {exc}"
+                "Could not instantiate extractor "
+                f"'{extractor_name}' (formatter={formatter_name or 'default'}): {exc}"
             ) from exc
 
         # Resolve storage
@@ -122,13 +126,14 @@ class Command(BaseCommand):
             "Running scraper with extractor=%s, storage=%s, formatter=%s, override=%s",
             extractor_name,
             storage_name,
-            formatter_name,
+            formatter_name or "<extractor default>",
             override,
         )
         self.stdout.write(
             self.style.HTTP_INFO(
                 f"Starting scrape using {extractor_name} -> {storage_name} "
-                f"(formatter={formatter_name}, override={override}, delete={delete})"
+                f"(formatter={formatter_name or 'extractor default'}, "
+                f"override={override}, delete={delete})"
             )
         )
 
