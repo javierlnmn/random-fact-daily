@@ -39,5 +39,9 @@ class DBStorage(BaseStorage):
 
     def delete(self, facts: list[FactType]) -> None:
         for index, fact in enumerate(facts):
-            Fact.objects.filter(identifier=fact.identifier).delete()
-            logger.info(f"Deleted fact {fact.identifier} (#{index})")
+            try:
+                fact_obj = Fact.objects.get(identifier=fact.identifier)
+                fact_obj.delete()
+                logger.info(f"Deleted fact {fact.identifier} (#{index})")
+            except Fact.DoesNotExist:
+                logger.warning(f"Fact {fact.identifier} (#{index}) not found")
