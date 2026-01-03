@@ -36,3 +36,8 @@ class DBStorage(BaseStorage):
                         index,
                         fact_obj.fact,
                     )
+
+    def delete(self, facts: list[FactType]) -> None:
+        for index, fact in enumerate(facts):
+            Fact.objects.filter(identifier=fact.identifier).delete()
+            logger.info(f"Deleted fact {fact.identifier} (#{index})")

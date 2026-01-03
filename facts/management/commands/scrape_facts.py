@@ -71,12 +71,18 @@ class Command(BaseCommand):
             action="store_true",
             help="Override existing facts in storage when identifiers already exist.",
         )
+        parser.add_argument(
+            "--delete",
+            action="store_true",
+            help="Delete the scraped facts from storage instead of saving them.",
+        )
 
     def handle(self, *args, **options):
         extractor_name: str = options["extractor"]
         storage_name: str = options["storage"]
         formatter_name: str = options["formatter"]
         override: bool = options["override"]
+        delete: bool = options["delete"]
 
         # Resolve formatter
         formatter_cls = _resolve_class(
@@ -122,10 +128,14 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.HTTP_INFO(
                 f"Starting scrape using {extractor_name} -> {storage_name} "
-                f"(formatter={formatter_name}, override={override})"
+                f"(formatter={formatter_name}, override={override}, delete={delete})"
             )
         )
 
-        scraper.scrape()
+        if delete and override:
+            logger.warning("Override flag is ignored when delete mode is enabled.")
 
-        self.stdout.write(self.style.SUCCESS("Scraping completed successfully."))
+        scraper.scrape(delete=delete)
+
+        action = "Deletion" if delete else "Scraping"
+        self.stdout.write(self.style.SUCCESS(f"{action} completed successfully."))
