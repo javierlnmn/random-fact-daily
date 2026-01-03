@@ -3,10 +3,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup, SoupStrainer, Tag
 from django.utils.text import slugify
-from selenium.webdriver import Chrome, ChromeOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
 from facts.scraping.extractors import BaseExtractor
 from facts.scraping.formatters import BaseFactFormatter, HoorayHeroesFactFormatter
@@ -26,41 +23,37 @@ class HoorayHeroesFunFactsExtractor(BaseExtractor):
 
     def _fetch(self) -> str:
         logger.info(f"Fetching {self.url}")
-        driver: Chrome | None = None
         try:
-            logger.info("Using Selenium to wait for content to load")
-            options = ChromeOptions()
-            options.add_argument("--headless=new")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--disable-dev-shm-usage")
-
-            driver = Chrome(options=options)
-            driver.get(self.url)
-
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "section.cms-content h2")
+            logger.info("Using Playwright to wait for content to load")
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=["--no-sandbox", "--disable-dev-shm-usage"],
                 )
-            )
+                page = browser.new_page()
+                page.goto(self.url, wait_until="networkidle")
+                page.wait_for_selector("section.cms-content h2", timeout=20_000)
+                html = page.content()
+                browser.close()
 
-            html = driver.page_source
             logger.info(f"Fetched {self.url} successfully")
             return html
-        except Exception as exc:
+        except PlaywrightTimeoutError as exc:
             logger.warning(
-                "Selenium fetch failed for %s (%s). Falling back to requests.",
+                "Playwright timed out for %s (%s). Falling back to requests.",
                 self.url,
                 exc,
             )
-            response = requests.get(self.url)
-            response.raise_for_status()
-            return response.text
-        finally:
-            if driver is not None:
-                try:
-                    driver.quit()
-                except Exception:
-                    logger.debug("Failed to quit Selenium driver cleanly")
+        except Exception as exc:
+            logger.warning(
+                "Playwright fetch failed for %s (%s). Falling back to requests.",
+                self.url,
+                exc,
+            )
+
+        response = requests.get(self.url)
+        response.raise_for_status()
+        return response.text
 
     def _process_html(self, html: str) -> list[FactType]:
         logger.info(f"Processing HTML for {self.url}")
