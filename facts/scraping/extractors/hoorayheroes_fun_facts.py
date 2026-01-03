@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from facts.scraping.extractors import BaseExtractor
-from facts.scraping.formatters import BaseFactFormatter, DefaultFactFormatter
+from facts.scraping.formatters import BaseFactFormatter, HoorayHeroesFactFormatter
 from facts.scraping.types import Fact as FactType
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,9 @@ BASE_URL = "https://hoorayheroes.com/"
 
 
 class HoorayHeroesFunFactsExtractor(BaseExtractor):
-    def __init__(self, formatter: BaseFactFormatter = DefaultFactFormatter()) -> None:
+    def __init__(
+        self, formatter: BaseFactFormatter = HoorayHeroesFactFormatter()
+    ) -> None:
         self.formatter = formatter
 
     def _fetch(self) -> str:
@@ -96,7 +98,7 @@ class HoorayHeroesFunFactsExtractor(BaseExtractor):
             )
             desc_html = ""
         else:
-            desc_html = desc_tag.decode_contents().strip()
+            desc_html = desc_tag.get_text(" ", strip=True)
 
         fact_text, desc_html = self.formatter.format(fact_text, desc_html)
 
@@ -115,3 +117,8 @@ class HooRayHeroesAnimalsFunFactsExtractor(HoorayHeroesFunFactsExtractor):
 
 class HooRayHeroesMythBustingFunFactsExtractor(HoorayHeroesFunFactsExtractor):
     url = f"{BASE_URL}myth-busting-fun-facts/"
+
+    def _process_fact(self, fact_html: Tag) -> FactType:
+        fact = super()._process_fact(fact_html)
+        fact.fact = f"Myth busting: {fact.fact}"
+        return fact
