@@ -32,7 +32,16 @@ class DBStorage(BaseStorage):
                     logger.info(f"Updated fact #{index}")
                 else:
                     logger.info(
-                        "Fact #%s already exists:\n\t- %s\n\t- %s",
+                        "Fact #%s already exists:\n - %s",
                         index,
                         fact_obj.fact,
                     )
+
+    def delete(self, facts: list[FactType]) -> None:
+        for index, fact in enumerate(facts):
+            try:
+                fact_obj = Fact.objects.get(identifier=fact.identifier)
+                fact_obj.delete()
+                logger.info(f"Deleted fact {fact.identifier} (#{index})")
+            except Fact.DoesNotExist:
+                logger.warning(f"Fact {fact.identifier} (#{index}) not found")

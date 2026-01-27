@@ -40,6 +40,9 @@ class DefaultFactFormatter(BaseFactFormatter):
         while text.endswith("."):
             text = text[:-1].rstrip()
 
+        while text.endswith(":"):
+            text = text[:-1].rstrip()
+
         return text
 
     def format_description(self, description: str) -> str:

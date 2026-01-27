@@ -19,3 +19,6 @@ WORKDIR /data/app/
 RUN pip install poetry
 
 RUN poetry install
+
+RUN poetry run playwright install
+RUN poetry run playwright install-deps

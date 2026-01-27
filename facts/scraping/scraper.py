@@ -12,9 +12,14 @@ class Scraper:
         self.extractor = extractor
         self.storage = storage
 
-    def scrape(self):
+    def scrape(self, delete: bool = False):
         logger.info(f"Scraping {self.extractor.url}")
         facts = self.extractor.run()
         logger.info(f"Extracted {len(facts)} facts")
-        self.storage.save(facts)
-        logger.info(f"Saved {len(facts)} facts")
+
+        if delete:
+            self.storage.delete(facts)
+            logger.info(f"Deleted {len(facts)} facts")
+        else:
+            self.storage.save(facts)
+            logger.info(f"Saved {len(facts)} facts")
