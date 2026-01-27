@@ -16,6 +16,8 @@ ENV PATH /data/node_modules/.bin:$PATH
 COPY . /data/app/
 WORKDIR /data/app/
 
+RUN mkdir -p db && touch ./db/db.sqlite3
+
 RUN pip install poetry
 
 RUN poetry install
