@@ -21,7 +21,6 @@ services:
       - "8003:8003"
     volumes:
       - static_data:/data/app/staticfiles
-      - app_data:/data/app
     deploy:
       resources:
         limits:
