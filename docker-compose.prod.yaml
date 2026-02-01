@@ -21,7 +21,7 @@ services:
       - "8003:8003"
     volumes:
       - static_data:/data/app/staticfiles
-      - db_data:/data/app/db.sqlite3
+      - db_data:/data/app/db
     deploy:
       resources:
         limits:
