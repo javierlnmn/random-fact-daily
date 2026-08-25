@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import View
 
 from .forms import FactReactionForm
-from .models import Fact
+from .models import Fact, ReactionChoices
 
 
 class IndexView(View):
@@ -21,9 +21,14 @@ class DailyFactView(View):
 
 class DailyFactReactView(View):
     def post(self, request):
-        fact = Fact.get_current_fact()
-
         form = FactReactionForm(request.POST)
+        if not form.is_valid():
+            return redirect(reverse("facts:random-fact"))
 
-        print("AAAA")
-        print(form.data)
+        reaction = ReactionChoices(form.cleaned_data["reaction_name"])
+
+        print(reaction)
+
+        # TODO: Save reaction into DB and session
+
+        return redirect(reverse("facts:random-fact"))
