@@ -82,3 +82,28 @@ class UpdateOldVisitedFactsTests(TestCase):
         today_fact.refresh_from_db()
         self.assertEqual(old_fact.status, FactStatus.VISITED)
         self.assertEqual(today_fact.status, FactStatus.CURRENT)
+
+
+class GetCurrentFactTests(TestCase):
+    def test_returns_the_fact_marked_current_today(self):
+        fact = FactFactory(
+            status=FactStatus.CURRENT, date_visited=timezone.now().date()
+        )
+
+        self.assertEqual(Fact.get_current_fact(), fact)
+
+    def test_returns_none_when_the_current_fact_is_from_an_earlier_day(self):
+        FactFactory(
+            status=FactStatus.CURRENT,
+            date_visited=timezone.now().date() - timedelta(days=1),
+        )
+
+        self.assertIsNone(Fact.get_current_fact())
+
+    def test_does_not_mark_any_fact_as_current(self):
+        FactFactory.create_batch(3)
+
+        self.assertIsNone(Fact.get_current_fact())
+        self.assertFalse(
+            Fact.objects.exclude(status=FactStatus.NOT_VISITED).exists()
+        )

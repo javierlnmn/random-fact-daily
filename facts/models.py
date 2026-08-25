@@ -119,3 +119,9 @@ class Fact(models.Model):
         fact.update_visited_status(FactStatus.CURRENT)
 
         return fact
+
+    @classmethod
+    def get_current_fact(cls):
+        return cls.objects.filter(
+            status=FactStatus.CURRENT, date_visited=get_today_date()
+        ).first()

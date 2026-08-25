@@ -12,5 +12,5 @@ class IndexView(View):
 
 class RandomFactView(View):
     def get(self, request):
-        fact = Fact.set_today_current_fact()
+        fact = Fact.get_current_fact()
         return render(request, "facts/random_fact.html", {"fact": fact})
