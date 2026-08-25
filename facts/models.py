@@ -1,9 +1,12 @@
+import logging
 import random
 from datetime import datetime
 
 from django.db import models
 
 from common.utils import get_today_date
+
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -66,13 +69,27 @@ class Fact(models.Model):
     def get_fact_for_date(cls, date: datetime):
         facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
         fact_count = facts.count()
+
         num_date = date.toordinal()
+
         rng = random.Random(num_date)
-        choice = rng.choice(range(fact_count))
+        try:
+            choice = rng.choice(range(fact_count))
+        except IndexError:
+            logger.warning(
+                """Not visited facts list is empty.
+                Please, reset the list or add some other objects."""
+            )
+            return None
+
         return facts[choice]
 
     @classmethod
     def set_today_current_fact(cls):
+        if cls.objects.all().count() == 0:
+            logger.warning("There are no facts registered yet.")
+            return None
+
         today = get_today_date()
         try:
             return cls.objects.get(
@@ -86,15 +103,18 @@ class Fact(models.Model):
 
         cls.update_old_visited_facts()
 
-        facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
+        not_visited_facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
 
-        fact_count = facts.count()
+        not_visited_facts_count = not_visited_facts.count()
 
-        if fact_count == 0:
+        if not_visited_facts_count == 0:
             cls.reset_all_facts()
-            facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
+            not_visited_facts = cls.objects.all()
 
         fact = cls.get_fact_for_date(today)
+
+        if not fact:
+            return None
 
         fact.update_visited_status(FactStatus.CURRENT)
 
