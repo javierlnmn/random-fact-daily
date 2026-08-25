@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django_q.tasks import Schedule, schedule
 
 from common.utils import get_tomorrow_start_of_day
+from facts.models import Fact
 
 logger = logging.getLogger(__name__)
 
@@ -26,3 +27,5 @@ class Command(BaseCommand):
             logger.info("The current task is already registered.")
         except Exception:
             logger.exception("Unexpected error scheduling the daily fact update task.")
+
+        Fact.set_today_current_fact()
