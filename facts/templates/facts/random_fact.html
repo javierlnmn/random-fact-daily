@@ -11,7 +11,7 @@
     <p class="text-lg max-md:text-base max-sm:text-xs text-center text-balance">
       {{ fact.description }}
     </p>
-    {% endif %} {% else %}
+    {% endif %} {% include 'facts/reactions.html' %} {% else %}
     <h1 class="text-4xl max-md:text-2xl font-bold">
       Sorry, there is no fact for today :(
     </h1>

@@ -1,4 +1,6 @@
 {% load static tailwind_tags %}
+{% load django_htmx %}
+{% load alpine_tags %}
 
 <head>
   <meta charset="UTF-8" />
@@ -14,6 +16,8 @@
   />
 
   {% tailwind_css %}
+  {% htmx_script %}
+  <script src="{% alpine_js %}" defer></script>
 
   <style>
     * {

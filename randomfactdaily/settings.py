@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     # JET admin
     "jet.dashboard",
     "jet",
+    # HTXM + Alpine.js
+    "django_htmx",
+    "django_alpine",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -70,6 +73,8 @@ MIDDLEWARE = [
     "django_browser_reload.middleware.BrowserReloadMiddleware",
     # Whitenoise
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # HTMX
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "randomfactdaily.urls"

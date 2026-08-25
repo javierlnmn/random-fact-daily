@@ -1,0 +1,12 @@
+<form
+  hx-post="{% url "facts:fact-react" %}"
+  class="flex items-center gap-2 mt-3 max-sm:gap-1"
+  role="group"
+  aria-label="React to this fact"
+>
+  {% include 'facts/reaction_button.html' with emoji="👍" kind="thumbs_up" label="Nice" %}
+  {% include 'facts/reaction_button.html' with emoji="😂" kind="funny" label="Funny" %}
+  {% include 'facts/reaction_button.html' with emoji="🤯" kind="mind_blown" label="Mind blowing" %}
+  {% include 'facts/reaction_button.html' with emoji="🤨" kind="weird" label="Weird" %}
+  {% include 'facts/reaction_button.html' with emoji="❤️" kind="love" label="Love" %}
+</form>
