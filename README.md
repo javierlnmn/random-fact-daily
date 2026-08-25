@@ -1,6 +1,11 @@
 # Random Fact Daily
 
-A random fact every day.
+A Django site that shows a random fact every day.
+
+The facts come from public web pages. A management command scrapes them into the
+database. An extractor reads one site, a formatter cleans the text, and a
+storage class writes the result. See
+[Scraping](#scraping) for more info.
 
 ## Development
 
@@ -8,7 +13,6 @@ Run it on the host machine. No Docker.
 
 ```sh
 uv sync
-uv run playwright install chromium   # only for manage.py scrape_facts
 uv run python manage.py tailwind install
 uv run python manage.py migrate
 ```
@@ -37,11 +41,45 @@ docker run -d --name random-fact-daily \
   random-fact-daily
 ```
 
-The container runs `migrate` and then gunicorn. Static files are built during
-the image build and served by whitenoise.
+The container runs `migrate` and then gunicorn.
 
-Scrape facts:
+## Scraping
+
+`manage.py scrape_facts` takes an extractor and a storage class, both by class
+name:
 
 ```sh
-docker exec random-fact-daily python manage.py scrape_facts
+uv run python manage.py scrape_facts ScienceFocus121FactsExtractor DBStorage
+```
+
+In the container:
+
+```sh
+docker exec random-fact-daily python manage.py scrape_facts ScienceFocus121FactsExtractor DBStorage
+```
+
+Extractors, from `facts/scraping/extractors/`:
+
+| Class | Needs Chromium |
+| --- | --- |
+| `ScienceFocus121FactsExtractor` | no |
+| `TodayInterestingFactsAdultsExtractor` | no |
+| `HooRayHeroesAnimalsFunFactsExtractor` | yes |
+| `HooRayHeroesMythBustingFunFactsExtractor` | yes |
+
+`DBStorage` is the only storage class.
+
+Options:
+
+| Option | Effect |
+| --- | --- |
+| `--formatter <Class>` | Use `DefaultFactFormatter` or `HoorayHeroesFactFormatter` instead of the extractor default. |
+| `--override` | Replace facts whose identifier already exists. |
+| `--delete` | Delete the scraped facts instead of saving them. `--override` is ignored. |
+
+The two HooRayHeroes extractors drive a headless browser with playwright. The
+image installs Chromium during the build. On the host, install it once:
+
+```sh
+uv run playwright install chromium
 ```
