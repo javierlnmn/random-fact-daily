@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "common",
     "accounts",
     "facts",
+    # Django Q
+    "django_q",
 ]
 
 MIDDLEWARE = [
@@ -194,3 +196,15 @@ LOGIN_REDIRECT_URL = "common:index"
 LOGIN_URL = "accounts:login"
 LOGOUT_REDIRECT_URL = "common:index"
 LOGOUT_URL = "accounts:logout"
+
+# Django Q2
+Q_CLUSTER = {
+    "name": "randomfactdaily",
+    "workers": int(os.getenv("Q_WORKERS", "2")),
+    "timeout": int(os.getenv("Q_TIMEOUT", "60")),
+    "retry": int(os.getenv("Q_RETRY", "120")),
+    "catch_up": False,
+    "orm": "default",
+    # django-q logs its cluster and worker startup at INFO on its own handler.
+    "log_level": "WARNING",
+}

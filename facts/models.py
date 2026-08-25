@@ -1,8 +1,9 @@
-import datetime
 import random
+from datetime import datetime
 
 from django.db import models
-from django.utils import timezone
+
+from common.utils import get_today_date
 
 
 class Category(models.Model):
@@ -40,10 +41,10 @@ class Fact(models.Model):
     def __str__(self):
         return self.fact
 
-    def update_status(self, status: FactStatus):
+    def update_visited_status(self, status: FactStatus):
         self.status = status
         if status == FactStatus.CURRENT:
-            self.date_visited = timezone.now().date()
+            self.date_visited = get_today_date()
         elif status == FactStatus.NOT_VISITED:
             self.date_visited = None
         self.save()
@@ -53,46 +54,48 @@ class Fact(models.Model):
         cls.objects.all().update(status=FactStatus.NOT_VISITED, date_visited=None)
 
     @classmethod
-    def update_old_visited_facts(cls, date=timezone.now()):
-        today = timezone.now().date()
+    def update_old_visited_facts(cls):
         cls.objects.filter(
             status=FactStatus.CURRENT,
-            date_visited__lt=today,
+            date_visited__lt=get_today_date(),
         ).update(
             status=FactStatus.VISITED,
         )
 
     @classmethod
-    def get_today_current_fact(cls):
-        today = timezone.now().date()
-        try:
-            return cls.objects.get(status=FactStatus.CURRENT, date_visited=today)
-        except cls.DoesNotExist:
-            return None
-        except cls.MultipleObjectsReturned:
-            return None
+    def get_fact_for_date(cls, date: datetime):
+        facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
+        fact_count = facts.count()
+        num_date = date.toordinal()
+        rng = random.Random(num_date)
+        choice = rng.choice(range(fact_count))
+        return facts[choice]
 
     @classmethod
-    def get_fact_from_date(cls, date: datetime.date):
-        today_current_fact = cls.get_today_current_fact()
-        if today_current_fact is not None:
-            return today_current_fact
+    def set_today_current_fact(cls):
+        today = get_today_date()
+        try:
+            return cls.objects.get(
+                status=FactStatus.CURRENT,
+                date_visited=today,
+            )
+        except cls.DoesNotExist:
+            pass
+        except cls.MultipleObjectsReturned:
+            pass
 
-        cls.update_old_visited_facts(date)
+        cls.update_old_visited_facts()
 
         facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
 
-        num_date = date.toordinal()
         fact_count = facts.count()
 
         if fact_count == 0:
             cls.reset_all_facts()
             facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
 
-        rng = random.Random(num_date)
-        choice = rng.choice(range(fact_count))
-        fact = facts[choice]
+        fact = cls.get_fact_for_date(today)
 
-        fact.update_status(FactStatus.CURRENT)
+        fact.update_visited_status(FactStatus.CURRENT)
 
         return fact
