@@ -1,0 +1,10 @@
+<button
+  type="submit"
+  value="{{ kind }}"
+  data-reaction="{{ kind }}"
+  aria-label="{{ label }}"
+  aria-pressed="{% if reacted_kind == kind %}true{% else %}false{% endif %}"
+  class="grid place-items-center rounded-full size-14 text-3xl cursor-pointer transition-[background-color,transform] duration-200 max-md:size-12 max-md:text-2xl max-sm:size-10 max-sm:text-xl hover:bg-neutral-200 active:scale-95 aria-pressed:bg-neutral-200 aria-pressed:ring-2 aria-pressed:ring-neutral-300 dark:hover:bg-neutral-800 dark:aria-pressed:bg-neutral-800 dark:aria-pressed:ring-neutral-700"
+>
+  {{ emoji }}
+</button>

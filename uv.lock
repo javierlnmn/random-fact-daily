@@ -188,6 +188,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-alpine"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/37/c9/a601e7cdb56627733de91840daeab8fb6f090e822cd3e4910450d47e3cc8/django_alpine-0.1.4.tar.gz", hash = "sha256:18bb6275f57e42ea13ec38faaa5782bec723d4e524e0c64c799140d9cd475586", size = 23790, upload-time = "2024-12-01T13:56:39.288Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/bb/d8db1bf23bc80f19a9ff14d2e647937674dc68b898ef2893a89e683a7959/django_alpine-0.1.4-py3-none-any.whl", hash = "sha256:423f2d11519ecede45a4d9d890d391c757bee259defcfa4435db8f0d72984893", size = 21150, upload-time = "2024-12-01T13:56:27.632Z" },
+]
+
+[[package]]
 name = "django-browser-reload"
 version = "1.13.0"
 source = { registry = "https://pypi.org/simple" }
@@ -198,6 +211,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d6/5a/4f3855b6f26445aa41cf0a506be737526a546f1ba14e894cb0bcd6f4c2f2/django_browser_reload-1.13.0.tar.gz", hash = "sha256:4e3507c10518f4c7439588aaed2f0c21b503878ecea7b18893f1e635e0cbe3ab", size = 14339, upload-time = "2024-06-19T16:16:26.505Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4f/60/765775f5ae43d0ef041d219b9866e02724c5d65eba588e73f3d43d62b77e/django_browser_reload-1.13.0-py3-none-any.whl", hash = "sha256:5c1705eb29f0b72808b702484f10a8d5da9cd9243e55ab81446cb697e96b3e8c", size = 12229, upload-time = "2024-06-19T16:16:24.633Z" },
+]
+
+[[package]]
+name = "django-htmx"
+version = "1.27.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/f2/8c3e28a5eed8e5226835c762892bfef74eda7e8629c65b49c186098eb303/django_htmx-1.27.0.tar.gz", hash = "sha256:036e5da801bfdf5f1ca815f21592cfb9f004a898f330c842f15e55c70e301a75", size = 65362, upload-time = "2025-11-28T23:18:55.049Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/ac/25d28489dc43224e260f4ebee7565f7ef1efe12af0f284a89500c19f75e2/django_htmx-1.27.0-py3-none-any.whl", hash = "sha256:13e1e13b87d39b57f95aae6e4987cb3df056d0b1373a41f4a94504a00298ffd8", size = 62126, upload-time = "2025-11-28T23:18:53.57Z" },
 ]
 
 [[package]]
@@ -409,7 +435,9 @@ dependencies = [
     { name = "bs4" },
     { name = "django" },
     { name = "django-4-jet" },
+    { name = "django-alpine" },
     { name = "django-browser-reload" },
+    { name = "django-htmx" },
     { name = "django-q2" },
     { name = "django-tailwind" },
     { name = "gunicorn" },
@@ -436,7 +464,9 @@ requires-dist = [
     { name = "bs4", specifier = ">=0.0.2,<0.0.3" },
     { name = "django", specifier = "==5.0.6" },
     { name = "django-4-jet", specifier = "==1.0.9" },
+    { name = "django-alpine", specifier = ">=0.1.4" },
     { name = "django-browser-reload", specifier = "==1.13.0" },
+    { name = "django-htmx", specifier = ">=1.27.0" },
     { name = "django-q2", specifier = ">=1.10.0" },
     { name = "django-tailwind", specifier = "==3.8.0" },
     { name = "gunicorn", specifier = ">=23.0.0,<24.0.0" },

@@ -1,12 +1,20 @@
 import logging
 import random
-from datetime import datetime
+from datetime import date
 
 from django.db import models
 
 from common.utils import get_today_date
 
 logger = logging.getLogger(__name__)
+
+
+class ReactionChoices(models.TextChoices):
+    thumbs_up = ("thumbs_up", "Thumbs up")
+    funny = ("funny", "Funny")
+    mind_blown = ("mind_blown", "Mind blown")
+    weird = ("weird", "Weird")
+    love = ("love", "Love")
 
 
 class Category(models.Model):
@@ -66,7 +74,7 @@ class Fact(models.Model):
         )
 
     @classmethod
-    def get_fact_for_date(cls, date: datetime):
+    def get_fact_for_date(cls, date: date):
         facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
         fact_count = facts.count()
 
@@ -125,3 +133,17 @@ class Fact(models.Model):
         return cls.objects.filter(
             status=FactStatus.CURRENT, date_visited=get_today_date()
         ).first()
+
+
+class FactReaction(models.Model):
+    fact = models.ForeignKey(
+        Fact,
+        blank=False,
+        null=False,
+        related_name="reactions",
+        on_delete=models.CASCADE,
+    )
+    reaction = models.CharField(
+        choices=ReactionChoices, blank=False, null=False, max_length=255
+    )
+    session_data = models.JSONField()
