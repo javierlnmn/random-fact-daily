@@ -20,8 +20,8 @@ RUN playwright install --with-deps chromium
 
 COPY . .
 
-# SECRET_KEY is only needed to let Django load during the build
-RUN export SECRET_KEY=build \
+# Placeholders that only let the Django checks pass during the build
+RUN export SECRET_KEY=build CSRF_TRUSTED_ORIGINS=http://build \
     && python manage.py tailwind install \
     && python manage.py tailwind build \
     && python manage.py collectstatic --noinput
