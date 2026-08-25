@@ -1,0 +1,21 @@
+x-app: &app
+  build: .
+  env_file: .env
+  volumes:
+    - db_data:/app/db
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *app
+    ports:
+      - "8000:8000"
+    mem_limit: 320m
+
+  qcluster:
+    <<: *app
+    command: python manage.py qcluster
+    mem_limit: 256m
+
+volumes:
+  db_data:

@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-cache
+RUN uv sync --frozen --no-cache --no-dev
 
 RUN playwright install --with-deps chromium
 
@@ -28,4 +28,4 @@ RUN export SECRET_KEY=build CSRF_TRUSTED_ORIGINS=http://build \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && gunicorn randomfactdaily.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 2"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py init_daily_fact_update_task && gunicorn randomfactdaily.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 2"]

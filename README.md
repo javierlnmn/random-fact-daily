@@ -26,22 +26,19 @@ uv run python manage.py runserver
 
 ## Production
 
-One image, no Docker Compose. The `.env` file stays out of the image and is
-given at run time.
+To run the app, use Docker Compose to execute the two services, both from the same image:
+
+- `web` applies the migrations, registers the daily schedule, then serves the
+  site with gunicorn on port 8000.
+- `qcluster` runs the Django Q worker, which picks the fact of the day at
+  midnight.
+
+To build and run:
 
 ```sh
-docker build -t random-fact-daily .
-
-docker run -d --name random-fact-daily \
-  --env-file .env \
-  -p 8000:8000 \
-  -v random-fact-daily-db:/app/db \
-  --memory=384m --cpus=0.5 \
-  --restart unless-stopped \
-  random-fact-daily
+cp .env.example .env   # then set the real values
+docker compose up -d --build
 ```
-
-The container runs `migrate` and then gunicorn.
 
 ## Scraping
 
@@ -55,7 +52,7 @@ uv run python manage.py scrape_facts ScienceFocus121FactsExtractor DBStorage
 In the container:
 
 ```sh
-docker exec random-fact-daily python manage.py scrape_facts ScienceFocus121FactsExtractor DBStorage
+docker compose exec web python manage.py scrape_facts ScienceFocus121FactsExtractor DBStorage
 ```
 
 Extractors, from `facts/scraping/extractors/`:
