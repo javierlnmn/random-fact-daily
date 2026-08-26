@@ -1,6 +1,7 @@
 <form
+  id="reactions-form"
   hx-post="{% url "facts:fact-react" %}"
-  hx-swap="none"
+  hx-swap-oob="true"
   class="flex items-center gap-2 mt-3 max-sm:gap-1"
   role="group"
   aria-label="React to this fact"

@@ -15,6 +15,13 @@
     rel="stylesheet"
   />
 
+  <!-- htmx rolls these back to their old values on a swap, then restores
+       them after the settle delay, so the reaction buttons can transition. -->
+  <meta
+    name="htmx-config"
+    content='{"attributesToSettle": ["class", "style", "width", "height", "disabled", "aria-pressed"]}'
+  />
+
   {% tailwind_css %}
   {% htmx_script %}
   <script src="{% alpine_js %}" defer></script>

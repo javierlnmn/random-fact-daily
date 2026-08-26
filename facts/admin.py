@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Fact, FactStatus
+from .models import Category, Fact, Reaction, FactStatus
 
 status_color = {
     FactStatus.VISITED: {
@@ -48,6 +48,14 @@ class FactAdmin(admin.ModelAdmin):
     status_display.allow_tags = True
     status_display.admin_order_field = "status"
     status_display.short_description = "status"
+
+
+@admin.register(Reaction)
+class ReactionAdmin(admin.ModelAdmin):
+    list_display = ("fact", "reaction", "session_id", "user")
+    list_filter = ("fact", "reaction", "session_id", "user")
+    search_fields = ("fact", "reaction", "session_id", "user")
+    list_display_links = ("fact", "reaction")
 
 
 admin.site.register(Category)

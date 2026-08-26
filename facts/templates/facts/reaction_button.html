@@ -1,11 +1,28 @@
+{% load feature_flags %}
+{% flag_enabled 'FACT_REACTION_UPDATE_ENABLED' as reaction_update_enabled %}
+
 <button
   type="submit"
+  id="reaction-{{ kind }}"
   name="reaction_name"
+  {% if user_reaction and not reaction_update_enabled %}disabled{% endif %}
   value="{{ kind }}"
   data-reaction="{{ kind }}"
+  title="{{ label }}"
   aria-label="{{ label }}"
-  aria-pressed="{% if reacted_kind == kind %}true{% else %}false{% endif %}"
-  class="grid place-items-center rounded-full size-14 text-3xl cursor-pointer transition-[background-color,transform] duration-200 max-md:size-12 max-md:text-2xl max-sm:size-10 max-sm:text-xl hover:bg-neutral-200 active:scale-95 aria-pressed:bg-neutral-200 aria-pressed:ring-2 aria-pressed:ring-neutral-300 dark:hover:bg-neutral-800 dark:aria-pressed:bg-neutral-800 dark:aria-pressed:ring-neutral-700"
+  aria-pressed="{% if user_reaction.reaction == kind %}true{% else %}false{% endif %}"
+  class="group grid place-items-center rounded-full size-14 text-3xl select-none cursor-pointer
+    transition duration-200 ease-out
+    max-md:size-12 max-md:text-2xl max-sm:size-10 max-sm:text-xl
+    enabled:hover:bg-neutral-200/70 enabled:hover:-translate-y-0.5
+    enabled:active:scale-90 enabled:active:translate-y-0
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400
+    aria-pressed:bg-neutral-200 aria-pressed:shadow-sm
+    disabled:cursor-default disabled:aria-[pressed=false]:opacity-40
+    dark:enabled:hover:bg-neutral-800/70 dark:focus-visible:ring-neutral-500
+    dark:aria-pressed:bg-neutral-800"
 >
-  {{ emoji }}
+  <span class="transition-transform duration-200 ease-out group-aria-pressed:scale-110">
+    {{ emoji }}
+  </span>
 </button>

@@ -2,6 +2,7 @@ import logging
 import random
 from datetime import date
 
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from common.utils import get_today_date
@@ -135,7 +136,7 @@ class Fact(models.Model):
         ).first()
 
 
-class FactReaction(models.Model):
+class Reaction(models.Model):
     fact = models.ForeignKey(
         Fact,
         blank=False,
@@ -146,4 +147,27 @@ class FactReaction(models.Model):
     reaction = models.CharField(
         choices=ReactionChoices, blank=False, null=False, max_length=255
     )
-    session_data = models.JSONField()
+    session_id = models.CharField(blank=True, null=True, max_length=255)
+    user = models.ForeignKey(
+        get_user_model(),
+        related_name="fact_reactions",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(models.Q(session_id__isnull=True) ^ models.Q(user=None)),
+                name="session_id_or_user",
+            ),
+            models.UniqueConstraint(
+                name="unique_fact_reaction_user",
+                fields=["fact", "reaction", "user"],
+            ),
+            models.UniqueConstraint(
+                name="unique_fact_reaction_session_id",
+                fields=["fact", "reaction", "session_id"],
+            ),
+        ]

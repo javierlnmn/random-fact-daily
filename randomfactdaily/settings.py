@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     "facts",
     # Django Q
     "django_q",
+    # Django flags
+    "flags",
 ]
 
 MIDDLEWARE = [
@@ -196,11 +198,13 @@ JET_THEMES = [
     {"theme": "light-gray", "color": "#222", "title": "Light Gray"},
 ]
 
+
 # Accounts redirect urls
 LOGIN_REDIRECT_URL = "common:index"
 LOGIN_URL = "accounts:login"
 LOGOUT_REDIRECT_URL = "common:index"
 LOGOUT_URL = "accounts:logout"
+
 
 # Django Q2
 Q_CLUSTER = {
@@ -212,4 +216,10 @@ Q_CLUSTER = {
     "orm": "default",
     # django-q logs its cluster and worker startup at INFO on its own handler.
     "log_level": "WARNING",
+}
+
+
+# Feature flags
+FLAGS = {
+    "FACT_REACTION_UPDATE_ENABLED": [],  # Default enabled, change in DB otherwise
 }
