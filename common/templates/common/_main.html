@@ -2,7 +2,7 @@
 <html lang="en">
   {% include 'common/base/head.html' %}
 
-  <body class="flex flex-col min-h-svh dark:bg-neutral-900" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+  <body class="flex flex-col h-full overflow-x-hidden dark:bg-neutral-900" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
     {% include 'common/base/header.html' %} {% block content %} {% endblock %}
     {% include 'common/base/footer.html' %}
   </body>
