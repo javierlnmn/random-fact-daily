@@ -1,6 +1,6 @@
 import logging
 import random
-from datetime import datetime
+from datetime import date
 
 from django.db import models
 
@@ -74,7 +74,7 @@ class Fact(models.Model):
         )
 
     @classmethod
-    def get_fact_for_date(cls, date: datetime):
+    def get_fact_for_date(cls, date: date):
         facts = cls.objects.filter(status=FactStatus.NOT_VISITED)
         fact_count = facts.count()
 
@@ -136,6 +136,14 @@ class Fact(models.Model):
 
 
 class FactReaction(models.Model):
-    fact = models.ForeignKey(Fact, blank=False, null=False, related_name="reactions")
-    reaction = models.CharField(choices=ReactionChoices, blank=False, null=False)
+    fact = models.ForeignKey(
+        Fact,
+        blank=False,
+        null=False,
+        related_name="reactions",
+        on_delete=models.CASCADE,
+    )
+    reaction = models.CharField(
+        choices=ReactionChoices, blank=False, null=False, max_length=255
+    )
     session_data = models.JSONField()
