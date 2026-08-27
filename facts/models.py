@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class ReactionChoices(models.TextChoices):
-    thumbs_up = ("thumbs_up", "Thumbs up")
-    funny = ("funny", "Funny")
-    mind_blown = ("mind_blown", "Mind blown")
-    weird = ("weird", "Weird")
-    love = ("love", "Love")
+    THUMBS_UP = ("thumbs_up", "Thumbs up")
+    FUNNY = ("funny", "Funny")
+    MIND_BLOWN = ("mind_blown", "Mind blown")
+    WEIRD = ("weird", "Weird")
+    LOVE = ("love", "Love")
 
 
 class Category(models.Model):

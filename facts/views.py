@@ -15,7 +15,7 @@ class IndexView(View):
 class DailyFactView(View):
     def get(self, request):
         fact = Fact.get_current_fact()
-        if request.user:
+        if request.user.is_authenticated:
             user_reaction = Reaction.objects.filter(
                 fact=fact, user_id=request.user.id
             ).first()
@@ -37,6 +37,9 @@ class DailyFactView(View):
 class DailyFactReactView(View):
     def post(self, request):
         current_fact = Fact.get_current_fact()
+
+        if not current_fact:
+            return redirect(reverse("facts:random-fact"))
 
         if request.user.is_authenticated:
             reaction_user_kwargs = {"user": request.user}

@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 from unittest.mock import patch
 
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.utils import timezone
 
+from accounts.tests.factories import UserFactory
 from facts.models import Fact, FactStatus
-from facts.tests.factories import FactFactory
+from facts.tests.factories import FactFactory, ReactionFactory
 
 
 class SetTodayCurrentFactTests(TestCase):
@@ -74,7 +76,7 @@ class UpdateOldVisitedFactsTests(TestCase):
         old_fact = FactFactory(
             status=FactStatus.CURRENT, date_visited=today - timedelta(days=1)
         )
-        today_fact = FactFactory(status=FactStatus.CURRENT, date_visited=today)
+        today_fact = FactFactory(current=True)
 
         Fact.update_old_visited_facts()
 
@@ -86,9 +88,7 @@ class UpdateOldVisitedFactsTests(TestCase):
 
 class GetCurrentFactTests(TestCase):
     def test_returns_the_fact_marked_current_today(self):
-        fact = FactFactory(
-            status=FactStatus.CURRENT, date_visited=timezone.now().date()
-        )
+        fact = FactFactory(current=True)
 
         self.assertEqual(Fact.get_current_fact(), fact)
 
@@ -107,3 +107,45 @@ class GetCurrentFactTests(TestCase):
         self.assertFalse(
             Fact.objects.exclude(status=FactStatus.NOT_VISITED).exists()
         )
+
+
+class ReactionConstraintTests(TestCase):
+    def test_rejects_a_reaction_with_a_user_and_a_session_id(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ReactionFactory(user=UserFactory())
+
+    def test_rejects_a_reaction_without_a_user_and_a_session_id(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ReactionFactory(session_id=None)
+
+    def test_rejects_the_same_reaction_twice_for_a_user(self):
+        reaction = ReactionFactory(authenticated=True)
+
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ReactionFactory(
+                fact=reaction.fact,
+                reaction=reaction.reaction,
+                authenticated=True,
+                user=reaction.user,
+            )
+
+    def test_rejects_the_same_reaction_twice_for_a_session(self):
+        reaction = ReactionFactory()
+
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ReactionFactory(
+                fact=reaction.fact,
+                reaction=reaction.reaction,
+                session_id=reaction.session_id,
+            )
+
+    def test_accepts_the_same_reaction_from_another_session(self):
+        reaction = ReactionFactory()
+
+        other_reaction = ReactionFactory(
+            fact=reaction.fact,
+            reaction=reaction.reaction,
+            session_id="another-session",
+        )
+
+        self.assertNotEqual(other_reaction.id, reaction.id)
